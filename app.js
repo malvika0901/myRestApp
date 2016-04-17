@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var users = require('./routes/sandbox');
+
 
 var app = express();
 
@@ -24,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/sandbox', users);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -31,6 +35,10 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+var http = require('http');
+var server = http.createServer(app);
+
 
 // error handlers
 
@@ -56,5 +64,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+server.listen(3000); //, '10.136.103.170');
+console.log('Express server started on port %d', server.address().port);
 
 module.exports = app;
