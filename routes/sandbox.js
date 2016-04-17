@@ -2,44 +2,50 @@ var express=require('express');
 var shortid=require('shortid');
 
 var router = express.Router();
-GLOBAL.names=[];
+GLOBAL.objects=[];
 
-router.post('/test', function(req, res, next) {
-	var jsonRes=req.body;
-	jsonRes.uid=shortid.generate();
-	names.push(jsonRes);
-	console.log("Names:");
-	console.log(names);
-	
+router.post('/objects', function(req, res, next) {
+	var newObj=req.body;
+	newObj.uid=shortid.generate();
+	objects.push(newObj);
+	res.send(newObj);
 });
-//TODO: Understand the requirements properly
-router.put('/:uid',function(req,res,next) {
+router.put('/objects/:uid',function(req,res,next) {
 	var requid=req.params.uid;
-    for(var i in names)
+    var reqbody=req.body;
+    for(var i in objects)
     {
-    	if(names[i].uid==requid)
+    	if(objects[i].uid==requid)
     	{
-    		names[i].doj="20 Aug 2015";
-    		break;
-    	}
-    }
-    console.log(names);
-})
-router.get('/:uid',function(req,res,next){
-	var requid=req.params.uid;
-	 for(var i in names)
-    {
-    	if(names[i].uid==requid)
-    	{
-    		res.send(names[i]);
-    		break;
+    		objects[i]=reqbody;
+            res.send(objects[i]);
+            break;
     	}
     }
 })
-router.delete('/:uid',function(req,res,next){
-	console.log("in delete")
+router.get('/objects/:uid',function(req,res,next){
 	var requid=req.params.uid;
-	 names.splice(requid,1);
-	 console.log(names);
+	 for(var i in objects)
+    {
+    	if(objects[i].uid==requid)
+    	{
+    		res.send(objects[i]);
+    		break;
+    	}
+    }
+})
+router.get('/objects',function(req,res,next){
+    var objList=[];
+    for(var i in objects)
+    {
+        objList[i]=objects[i].uid;
+    }
+    res.send(objList);
+})
+router.delete('/objects/:uid',function(req,res,next){
+	var requid=req.params.uid;
+    console.log(requid);
+	 objects.splice(requid,1);
+     console.log(objects);
 })
 module.exports = router;
