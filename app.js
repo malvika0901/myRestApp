@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var users = require('./routes/sandbox');
+var users = require('./routes/objects');
 
 
 var app = express();
@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/sandbox', users);
+app.use('/objects', users);
 
 
 // catch 404 and forward to error handler
@@ -43,14 +43,27 @@ var server = http.createServer(app);
 // error handlers
 
 // development error handler
-// will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    // will check for malformed JSON objects
+
+    var requestType = req.get('Content-Type');
+    if(requestType!='application/json')
+    {
+      var errorMessage={"verb":"POST"};
+      errorMessage.url=req.protocol + '://' + req.get('host') + req.originalUrl;
+      errorMessage.message="Not a JSON object";
+      res.send(errorMessage);
+    }
+    //will print stacktrace if the error is not regarding malformed JSON objects
+    else
+    {
+      res.render('error', {
       message: err.message,
       error: err
     });
+    } 
   });
 }
 
@@ -64,7 +77,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
-server.listen(3000); //, '10.136.103.170');
+server.listen(3000); 
 console.log('Express server started on port %d', server.address().port);
 
 module.exports = app;
